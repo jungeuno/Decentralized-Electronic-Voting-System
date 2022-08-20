@@ -10,4 +10,3 @@ def f2():
     return 'a'
 
 app.run()
-
