@@ -38,7 +38,7 @@ def vote():
                 'vote': data['vote']
             }
         }
-        data.append(block)
+        chain.append(block)
         return jsonify({'status': 'success'})
     except:
         return jsonify({'status': 'fail'})
