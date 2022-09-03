@@ -21,7 +21,7 @@ class GUI(QWidget):                                     # QWidget 상속 받음
         self.grid_layout.addWidget(self.group_box, 0, 0, 1, 1)
 
         self.setLayout(self.grid_layout)
-        
+
 def exception_hook(except_type, value, traceback):
     print(except_type, value, traceback)
     exit(1)                                             # 예외 처리 (에러 발생하더라도 결과 확인)
