@@ -21,16 +21,16 @@ while True:
         option3 = input('선택지3: ')
 
         data = {
-            'question': 'question',                              # 투표 질문
-            'options': ['option1', 'option2', 'option3']         # 투표 선택지
+            'question': question,                                # 투표 질문
+            'options': [option1, option2, option3]               # 투표 선택지
         }
 
         res = requests.post(
             'http://127.0.0.1:5000/open',
-            data=json.dumps(data),
-            headers=headers)                                     # json.dumps(data) - data 객체를 JSON 문자열로 변환
+            data=json.dumps(data),                               # json.dumps(data) - data 객체를 JSON 문자열로 변환
+            headers=headers)
         print(res.text)
-    elif menu == '3':                            # 투표 기능 (./lab_client/ 03. vote)
+    elif menu == '3':                                            # 투표 기능 (./lab_client/ 03. vote)
         headers = {'Content-Type': 'application/json'}
 
         id = input('투표 아이디')
@@ -43,7 +43,7 @@ while True:
             data=json.dumps(data),
             headers=headers)
         print(res.text)
-    elif menu == '4':                            # 종료 기능
+    elif menu == '4':                                            # 종료 기능
         break
 
 
