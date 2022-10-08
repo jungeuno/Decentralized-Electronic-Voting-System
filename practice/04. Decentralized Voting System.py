@@ -8,7 +8,7 @@ import socket
 import uuid
 
 
-class Tab1(QWidget):                                                    # 투표화면 생성 클래스 - p2p는 구성원들로부터 받는 데이터를 실시간으로 동기화가능 -> 조회 기능 필요없다.
+class Tab1(QWidget):                                                    # '투표' 화면 생성 클래스 - p2p는 구성원들로부터 받는 데이터를 실시간으로 동기화가능 -> 조회 기능 필요없다.
     def __init__(self, devs):
         super().__init__()
         self.devs = devs
@@ -25,8 +25,11 @@ class Tab1(QWidget):                                                    # 투표
         self.vote_group_box = QGroupBox('투표')
         self.question_label = QLabel(self)
         self.option1_button = QPushButton()
+        self.option1_button.clicked.connect(self.vote1)
         self.option2_button = QPushButton()
+        self.option2_button.clicked.connect(self.vote2)
         self.option3_button = QPushButton()
+        self.option3_button.clicked.connect(self.vote3)
         self.vote_layout = QVBoxLayout()
         self.vote_layout.addWidget(self.question_label)
         self.vote_layout.addWidget(self.option1_button)
@@ -53,7 +56,7 @@ class Tab1(QWidget):                                                    # 투표
 
         self.update_vote_list()
 
-    def update_vote_list(self):
+    def update_vote_list(self):                                             # 투표 목록 리스트
         self.vote_list.clear()
         self.vote_list_widget.clear()
         for block in self.devs.chain:
@@ -71,11 +74,11 @@ class Tab1(QWidget):                                                    # 투표
                 self.vote_list[vote_id]['vote_count'][block['data']['vote']] += 1
         self.update_vote()
 
-    def select_vote(self):
+    def select_vote(self):                                                  # 선택한 투표 목록
         self.current_vote_id = self.vote_list_widget.currentItem().text()
         self.update_vote()
 
-    def update_vote(self):
+    def update_vote(self):                                                  # 투표 현황 갱신
         if self.current_vote_id not in self.vote_list:
             return
 
@@ -86,12 +89,12 @@ class Tab1(QWidget):                                                    # 투표
         option1_text = self.vote_list[self.current_vote_id]['options'][0]
         self.option1_progressbar.setValue(self.vote_list[self.current_vote_id]['vote_count'][option1_text])
 
-        self.option2_button.setText(self.vote_list[self.current_vote_id]['question'])
+        self.option2_button.setText(self.vote_list[self.current_vote_id]['options'][1])
         self.option2_progressbar.setRange(0, self.vote_list[self.current_vote_id]['total_vote'])
         option2_text = self.vote_list[self.current_vote_id]['options'][1]
         self.option2_progressbar.setValue(self.vote_list[self.current_vote_id]['vote_count'][option2_text])
 
-        self.option3_button.setText(self.vote_list[self.current_vote_id]['question'])
+        self.option3_button.setText(self.vote_list[self.current_vote_id]['options'][2])
         self.option3_progressbar.setRange(0, self.vote_list[self.current_vote_id]['total_vote'])
         option3_text = self.vote_list[self.current_vote_id]['options'][2]
         self.option3_progressbar.setValue(self.vote_list[self.current_vote_id]['vote_count'][option3_text])
@@ -145,7 +148,7 @@ class Tab1(QWidget):                                                    # 투표
         self.update_vote_list()
 
 
-class Tab2(QWidget):                                                        # 투표 생성 클래스
+class Tab2(QWidget):                                                            # '투표 생성' 화면 클래스
     def __init__(self, devs):
         super().__init__()
         self.devs = devs
@@ -174,7 +177,7 @@ class Tab2(QWidget):                                                        # �
 
         self.setLayout(self.form_layout)
 
-    def publish_vote(self):                                                 # 투표 게시 함수 - 모두가 똑같은 정보를 가지도록 함
+    def publish_vote(self):                                                     # 투표 게시 함수 - 모두가 똑같은 정보를 가지도록 함
         block = {
             'type': 'open',
             'data': {
@@ -194,8 +197,9 @@ class Tab2(QWidget):                                                        # �
             except:
                 self.devs.nodes.remove(node)
         self.devs.tab1.update_vote_list()
+        self.clear_vote()
 
-    def clear_vote(self):                                                   # 투표 초기화 함수
+    def clear_vote(self):                                                       # 투표 초기화 함수
         self.question_line_edit.setText('')
         self.option1_line_edit.setText('')
         self.option2_line_edit.setText('')
@@ -264,10 +268,11 @@ class SocketListener(QThread):
 
     def __init__(self, devs):
         super().__init__()
+        self.devs = devs
 
     def run(self):
         while True:
-            connection, address = self.devs.listen_socket_accept()
+            connection, address = self.devs.listen_socket.accept()
             self.devs.nodes.append((connection, address))                       # listen을 통해 누군가 요청하면 수락하고, 노드에 추가하도록 함
             print('연결 됨:', address)
             self.receive_thread = SocketReceiver(self.devs, connection, address)
@@ -278,6 +283,64 @@ class SocketListener(QThread):
     def update_vote_list(self):
         self.update_vote_list_signal.emit()                                     # 소켓리스너가 가지고 있는 시그널
 
+class DecentralizedElectronicVotingSystem(QWidget):                             # Tab1,Tab2, SocketListener의 기능을 가져오는 메인 클래스
+    def __init__(self):
+        super().__init__()
+
+        self.chain = []
+        self.nodes = []
+
+        self.setWindowTitle('탈중앙 전자 투표 시스템')
+
+        self.tab1 = Tab1(self)
+        self.tab2 = Tab2(self)
+
+        self.tabs = QTabWidget()
+        self.tabs.addTab(self.tab1, '투표')
+        self.tabs.addTab(self.tab2, '투표 생성')
+
+        self.vbox_layout = QVBoxLayout()
+        self.vbox_layout.addWidget(self.tabs)
+
+        self.setLayout(self.vbox_layout)
+
+        # 이미 구성된 네트워크에 참여하는 코드
+        port = 6000
+        while True:
+            try:
+                self.listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                self.listen_socket.bind(('127.0.0.1', port))
+                self.listen_socket.listen(1)
+                print(f'{port}포트 연결 대기')
+                break
+            except:
+                port += 1
+
+        self.listen_thread = SocketListener(self)
+        self.listen_thread.update_vote_list_signal.connect(self.update_vote_list)
+        self.listen_thread.start()
+
+        for p in range(6000, 6005):                         # 5개 정도 실행
+            if p == port:
+                continue
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                s.connect(('127.0.0.1', p))
+                s.sendall(json.dumps({
+                    'type': 'connect',
+                    'data': {
+                        'port': port
+                    }
+                }).encode())
+                self.nodes.append((s, f'127.0.0.1:{p}'))
+            except:
+                pass
+
+    @pyqtSlot()
+    def update_vote_list(self):
+        self.tab1.update_vote_list()
+
+
 def exception_hook(except_type, value, traceback):
     print(except_type, value, traceback)
     exit(1)
@@ -286,6 +349,6 @@ def exception_hook(except_type, value, traceback):
 if __name__ == '__main__':
     app = QApplication(sys.argv)
     sys.excepthook = exception_hook
-    devs = Tab1(None)
+    devs = DecentralizedElectronicVotingSystem()
     devs.show()
     sys.exit(app.exec_())
