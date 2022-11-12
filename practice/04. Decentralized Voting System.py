@@ -6,7 +6,7 @@ import sys
 import json
 import socket
 import uuid
-
+# 변조 방지 코드
 
 class Tab1(QWidget):                                                    # '투표' 화면 생성 클래스 - p2p는 구성원들로부터 받는 데이터를 실시간으로 동기화가능 -> 조회 기능 필요없다.
     def __init__(self, devs):
