@@ -21,7 +21,7 @@ class Tab1(QWidget):
         self.devs = devs
         self.current_vote_id = -1
 
-        self.vote_list_group_box =  QGroupBox('투표 목록')
+        self.vote_list_group_box = QGroupBox('투표 목록')
         self.vote_list = dict()
         self.vote_list_widget = QListWidget()
         self.vote_list_widget.clicked.connect(self.select_vote)
@@ -221,7 +221,8 @@ class Tab2(QWidget):
         self.option2_line_edit.setText('')
         self.option3_line_edit.setText('')
 
-
+#######################################################################################
+# 위조 코드 - practice/05. 변조 방지된 코드 활용
 class Tab3(QWidget):
     def __init__(self, devs):
         super().__init__()
@@ -262,7 +263,7 @@ class Tab3(QWidget):
         self.devs.chain.append(block2)
 
         self.devs.tab1.update_vote_list()
-
+#######################################################################################
 
 class SocketReceiver(QThread):
     update_vote_list_signal = pyqtSignal()
