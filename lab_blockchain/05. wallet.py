@@ -1,7 +1,7 @@
 from ecdsa import SigningKey
 import hashlib
 import os
-
+# 지갑 - 개인의 고유 코드를 가짐
 new_private_key = SigningKey.generate()
 new_public_key = new_private_key.get_verifying_key()
 new_wallet_address = hashlib.sha256(new_public_key.to_string()).hexdigest()
