@@ -1,6 +1,6 @@
 import hashlib
 
-
+# 해시 연결 리스트
 def get_block_hash(block):
     data = dict()
     data['type'] = block['transaction']['type']
