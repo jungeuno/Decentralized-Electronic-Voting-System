@@ -1,5 +1,6 @@
 # '변조' - 모의해킹
 ###################################################################################
+
 from PyQt5.QtCore import *
 from PyQt5.QtWidgets import *
 
@@ -215,7 +216,7 @@ class Tab2(QWidget):                                                            
         self.option3_line_edit.setText('')
 
 ###################################################################################
-# 변조 코드
+# 변조 코드 - practice/04. 기본 블록체인 코드
 class Tab3(QWidget):
     def __init__(self, devs):
         super().__init__()
