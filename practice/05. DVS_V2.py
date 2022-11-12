@@ -5,7 +5,7 @@ import json
 import socket
 import uuid
 import hashlib
-
+# 변조 방지 된 코드에서 위조를 확인하고 위조된 블록체인은 폐기 시기는도록 함
 
 def get_block_hash(block):
     data = dict()
