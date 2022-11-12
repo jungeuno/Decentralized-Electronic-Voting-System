@@ -1,5 +1,7 @@
 import hashlib
-
+# 블록(딕셔너리)에 대한 해시(문자열 정보) 값을 구함 => [딕셔너리->문자열]
+# 해시 - 원본 값을 노출하지 않고 보존하는 역할 (역방향이 어려움)
+# 해시 값을 블록에 같이 넣으면 데이터가 안전함
 def get_block_hash(block):
     data = dict()
     data['type'] = block['transaction']['type']
